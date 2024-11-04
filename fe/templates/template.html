@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Area Calculator</title>
+</head>
+<body>
+    <h1>Surface Area Calculator</h1>
+    <label for="side">Enter Side Length:</label>
+    <input type="number" id="side" name="side" required>
+    
+    <div>
+        <label for="shape">Choose Shape:</label>
+        <select id="shape">
+            <option value="square">Square Area</option>
+            <option value="cube">Cube Area</option>
+        </select>
+    </div>
+    
+    <button onclick="findArea()">Find Area</button>
+    <p id="result"></p>
+
+    <script>
+        async function findArea() {
+            const side = document.getElementById("side").value;
+            const shape = document.getElementById("shape").value;
+            const resultElement = document.getElementById("result");
+
+            if (!side) {
+                resultElement.innerText = "Please enter a side length.";
+                return;
+            }
+
+            let url;
+            if (shape === "square") {
+                url = "http://127.0.0.1:8000/proxy/square/";
+            } else if (shape === "cube") {
+                url = "http://127.0.0.1:8000/proxy/cube/";
+            }
+
+            try {
+                const response = await fetch(url, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ side: Number(side) })
+                });
+                console.log(response);
+                const data = await response.json();
+                
+                resultElement.innerText = shape === "square" 
+                    ? `Square Area: ${data.area}`
+                    : `Cube Area: ${data.cube_area}`;
+            } catch (error) {
+                resultElement.innerText = "Error calculating area.";
+                console.error("Error:", error);
+            }
+        }
+    </script>
+</body>
+</html>
